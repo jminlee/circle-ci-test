@@ -1,0 +1,36 @@
+machine:
+  python:
+    version: 3.6.1
+  node:
+    version: 6.1.0
+
+dependencies:
+  post:
+    - npm install serverless serverless-apigw-binary serverless-apigwy-binary -g
+    - npm install serverless-delete-loggroups -g
+    - cd OracleServerless/LambdaUnion/nodejs; npm install
+    - cd OracleServerless/Api; pip install -r requirements.txt; npm install
+
+test:
+  post:
+    - cd OracleServerless/LambdaUnion/nodejs; npm test
+    - cd OracleServerless/Api; export PYTHONPATH=.; pytest
+
+deployment:
+  production:
+    tag: /v[0-9]+(\.[0-9]+)+/
+    commands:
+      - cd OracleServerless/LambdaUnion/nodejs; serverless deploy --stage prd
+      - cd OracleServerless/Api; serverless deploy --stage prd
+
+  development:
+    branch: dev
+    commands:
+      - cd OracleServerless/LambdaUnion/nodejs; serverless deploy --stage dev
+      - cd OracleServerless/Api; serverless deploy --stage dev
+
+  staging:
+    branch: stg
+    commands:
+      - cd OracleServerless/LambdaUnion/nodejs; serverless deploy --stage stg
+      - cd OracleServerless/Api; serverless deploy --stage stg
